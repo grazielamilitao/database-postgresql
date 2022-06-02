@@ -1,0 +1,76 @@
+Exercício 1
+
+create table Livro(
+id_livro serial primary key not null,
+nome varchar(200) not null,
+ano int not null,
+maximo_tempo_reserva int not null,
+prateleira int not null
+);
+
+insert into Livro (nome, ano, maximo_tempo_reserva, prateleira) values
+('O hobbit 1', 1958, 5, 21)
+insert into Livro (nome, ano, maximo_tempo_reserva, prateleira) values
+('O hobbit 2', 1959, 8, 21)
+insert into Livro (nome, ano, maximo_tempo_reserva, prateleira) values
+('O invencivel 1', 1959, 2, 23)
+insert into Livro (nome, ano, maximo_tempo_reserva, prateleira) values
+('O invencivel 2', 1959, 6, 23)
+
+select id_livro, nome, maximo_tempo_reserva from Livro where maximo_tempo_reserva >
+(select AVG(maximo_tempo_reserva) from Livro where prateleira = prateleira);
+
+
+Exercicio 2
+
+Parte 1
+
+create table Mentores(
+mentor_id serial primary key not null,
+nome varchar(200) not null,
+sala_de_aula varchar(200) not null
+);
+insert into Mentores(nome, sala_de_aula) values ('Fernando', 'Academy 1');
+insert into Mentores(nome, sala_de_aula) values ('Susan', 'Academy 2');
+insert into Mentores(nome, sala_de_aula) values ('Miguel', 'Academy 3');
+
+create table Posts(
+post_id serial primary key not null,
+mentor_id int not null,
+descricao varchar(200) not null,
+foreign key (mentor_id) references Mentores(mentor_id)
+);
+insert into Posts(mentor_id, descricao) values (1, 'Quarkus - Java');
+insert into Posts(mentor_id, descricao) values (2, 'Indexação no PostgreSQL');
+insert into Posts(mentor_id, descricao) values (1, 'Kubernetes');
+insert into Posts(mentor_id, descricao) values (2, 'Docker Compose');
+insert into Posts(mentor_id, descricao) values (3, 'Produtividade');
+
+create table Curtidas(
+mentor_id int not null,
+post_id int not null,
+foreign key (mentor_id) references Mentores(mentor_id),
+foreign key (post_id) references Posts(post_id)
+);
+
+insert into Curtidas(mentor_id, post_id) values (1,5);
+insert into Curtidas(mentor_id, post_id) values (1,2);
+insert into Curtidas(mentor_id, post_id) values (2,1);
+insert into Curtidas(mentor_id, post_id) values (2,5);
+insert into Curtidas(mentor_id, post_id) values (1,4);
+insert into Curtidas(mentor_id, post_id) values (2,3);
+insert into Curtidas(mentor_id, post_id) values (3,1);
+
+select nome, count(post_id) from Mentores inner join Curtidas on 
+Mentores.mentor_id = Curtidas.mentor_id GROUP BY(nome);
+
+Parte 2
+
+select sala_de_aula, post_id from Mentores inner join Curtidas on 
+Mentores.mentor_id = Curtidas.mentor_id order by sala_de_aula;
+
+
+Parte 3
+
+select sala_de_aula, AVG(post_id) as media from Mentores inner join Curtidas on 
+Mentores.mentor_id = Curtidas.mentor_id GROUP BY(sala_de_aula);
